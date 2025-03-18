@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Monitoring App</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container text-center mt-5">
+        <h1 class="mb-4">Weather Monitoring App</h1>
+        <div class="form-group">
+            <input id="cityInput" type="text" class="form-control" placeholder="Enter city name">
+        </div>
+        <button id="searchBtn" class="btn btn-primary mb-4">Get Weather</button>
+        <div id="weatherCard" class="card p-3 mx-auto" style="max-width: 500px; display: none;">
+            <h3 id="location" class="card-title"></h3>
+            <img id="weatherIcon" src="" alt="Weather Icon" class="card-img-top" style="width: 100px; margin: 0 auto;">
+            <ul class="list-group list-group-flush">
+                <li id="temperature" class="list-group-item"></li>
+                <li id="description" class="list-group-item"></li>
+                <li id="humidity" class="list-group-item"></li>
+                <li id="wind" class="list-group-item"></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        document.getElementById('searchBtn').addEventListener('click', async () => {
+            const city = document.getElementById('cityInput').value.trim();
+            const apiKey = ' 81cf015b0f1346ef961155912251803'; // Your API key
+            const apiUrl = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city},IN&aqi=no`;
+
+
+            if (!city) {
+                alert('Please enter a city name');
+                return;
+            }
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                if (data && data.location && data.current) {
+                    const weather = data.current;
+                    const locationData = data.location;
+
+                    document.getElementById('location').textContent = `${locationData.name}, ${locationData.country}`;
+                    document.getElementById('temperature').textContent = `Temperature: ${weather.temp_c}°C`;
+                    document.getElementById('description').textContent = `Weather: ${weather.condition.text}`;
+                    document.getElementById('humidity').textContent = `Humidity: ${weather.humidity}%`;
+                    document.getElementById('wind').textContent = `Wind Speed: ${weather.wind_kph} kph`;
+                    document.getElementById('weatherIcon').src = `https:${weather.condition.icon}`;
+
+                    document.getElementById('weatherCard').style.display = 'block';
+                } else {
+                    alert('City not found. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to fetch weather data. Please try again later.');
+            }
+        });
+    </script>
+
+    <!-- Bootstrap JS (Optional) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
